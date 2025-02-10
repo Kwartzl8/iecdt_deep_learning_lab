@@ -9,16 +9,16 @@ smoke_test: False
 
 seed: 0
 device: cpu
-log_freq: 100
+log_freq: 10
 
 # Optimization process
 epochs: 10
 learning_rate: 0.001
-batch_size: 16
+batch_size: 8
 
 latent_dim: 128
 
-dataloader_workers: 7
+dataloader_workers: 8
 tiles_path: "/gws/nopw/j04/iecdt/deep_learning_lab/1km_naturalcolor_numpy"
 train_metadata: "/gws/nopw/j04/iecdt/deep_learning_lab/1km_naturalcolor_metadata_time_train.csv"
 val_metadata: "/gws/nopw/j04/iecdt/deep_learning_lab/1km_naturalcolor_metadata_time_val.csv"
