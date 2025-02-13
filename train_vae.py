@@ -12,7 +12,7 @@ from omegaconf import DictConfig, OmegaConf
 from torch import nn
 
 import iecdt_lab
-from iecdt_lab.vae import CNNVAE
+from iecdt_lab.vae import VAE
 
 
 def plot_reconstructions(batch, reconstructions, data_stats, max_images=8):
@@ -92,14 +92,7 @@ def main(cfg: DictConfig):
         dataloader_workers=cfg.dataloader_workers,
     )
 
-    model = CNNVAE(latent_dim=cfg.latent_dim).to(cfg.device)
-
-    def loss_function(recon_x, x, mu, logvar):
-        """VAE Loss = Reconstruction Loss + KL Divergence"""
-        reproduction_loss = nn.functional.binary_cross_entropy(recon_x, x, reduction='sum')
-        kl_divergence = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())  # KL Divergence
-        return reproduction_loss + kl_divergence
-
+    model = VAE(latent_dim=cfg.latent_dim).to(cfg.device)
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.learning_rate)
 
     for epoch in range(cfg.epochs):
@@ -109,7 +102,7 @@ def main(cfg: DictConfig):
 
             batch = batch.to(cfg.device)
             preds, mu, logvar = model(batch)
-            loss = loss_function(preds, batch, mu, logvar)
+            loss = model.loss_function(preds, batch, mu, logvar)
             loss.backward()
             optimizer.step()
 
