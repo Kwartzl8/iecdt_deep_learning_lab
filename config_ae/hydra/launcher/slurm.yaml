@@ -11,3 +11,4 @@ gres: gpu:1
 name: ${name}
 additional_parameters:
   account: orchid
+qos: orchid
