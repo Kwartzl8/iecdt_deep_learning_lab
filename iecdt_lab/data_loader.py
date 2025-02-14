@@ -44,8 +44,8 @@ class GOESRGBTiles(Dataset):
 
         # Assuming the tile has the shape (C, H, W) where C is the number of channels
         # Extract the Blue and Red channels (assuming BGR or RGB order, adjust if necessary)
-        blue_channel = tile[0]  # Adjust index based on channel order in the tile
-        red_channel = tile[2]   # Adjust index based on channel order in the tile
+        blue_channel = tile[0]  
+        red_channel = tile[2]   
         
         # Calculate NDSI
         ndsi = self.calculate_ndsi(blue_channel, red_channel)
