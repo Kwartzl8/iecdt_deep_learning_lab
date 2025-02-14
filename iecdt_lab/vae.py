@@ -57,6 +57,10 @@ class VAE(nn.Module):
         return x_reconstructed, mu, logvar
 
     def loss_function(self, x_reconstructed: torch.Tensor, x: torch.Tensor, mu: torch.Tensor, logvar: torch.Tensor) -> torch.Tensor:
-        recon_loss = F.mse_loss(x_reconstructed, x, reduction='sum')
+        # replace all elements in x that are larger than 1 with 1
+        
+        x = torch.clamp(x, 0, 1)
+        print(torch.amax(x))
+        recon_loss = F.binary_cross_entropy(torch.sigmoid(x_reconstructed), x, reduction='sum')
         kld_loss = -0.5 * torch.sum(1 + logvar - mu.pow(2) - logvar.exp())
         return recon_loss + kld_loss
