@@ -36,13 +36,13 @@ def plot_reconstructions(batch, reconstructions, data_stats, max_images=8):
 
 def validation(cfg, model, test_data_loader, data_stats):
     model.eval()
-    running_mse = 0
+    running_loss = 0
     num_batches = len(test_data_loader)
     with torch.no_grad():
         for i, (batch, _) in enumerate(test_data_loader):
             batch = batch.to(cfg.device)
-            reconstructions = model(batch)
-            running_mse += torch.mean((batch - reconstructions) ** 2).cpu().numpy()
+            reconstructions, mu, logvar = model(batch)
+            running_loss += model.loss_function(reconstructions, batch, mu, logvar).item()
 
             if i == 0:
                 fig = plot_reconstructions(batch, reconstructions, data_stats)
@@ -51,7 +51,7 @@ def validation(cfg, model, test_data_loader, data_stats):
                 num_batches = i + 1
                 break
 
-    val_mse = running_mse / num_batches
+    val_mse = running_loss / num_batches
     return fig, val_mse
 
 
@@ -101,6 +101,7 @@ def main(cfg: DictConfig):
             optimizer.zero_grad()
 
             batch = batch.to(cfg.device)
+            print("batch max value", torch.amax(batch))
             preds, mu, logvar = model(batch)
             loss = model.loss_function(preds, batch, mu, logvar)
             loss.backward()
